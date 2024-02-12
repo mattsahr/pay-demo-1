@@ -1,26 +1,27 @@
-import React, { Fragment } from 'react'
-import Link from 'next/link'
+import React, { Fragment } from 'react';
+import Link from 'next/link';
 
-import { Product } from '../../../payload/payload-types'
-import { AddToCartButton } from '../../_components/AddToCartButton'
-import { Gutter } from '../../_components/Gutter'
-import { Media } from '../../_components/Media'
-import { Message } from '../../_components/Message'
-import { Price } from '../../_components/Price'
-import RichText from '../../_components/RichText'
+import { Product } from '../../../payload/payload-types';
+import { AddToCartButton } from '../../_components/AddToCartButton';
+import { Gutter } from '../../_components/Gutter';
+import { Media } from '../../_components/Media';
+import { Message } from '../../_components/Message';
+import { Price } from '../../_components/Price';
+import RichText from '../../_components/RichText';
 
-import classes from './index.module.scss'
+import classes from './index.module.scss';
 
 export const ProductHero: React.FC<{
-  product: Product
+  product: Product;
 }> = ({ product }) => {
   const {
     id,
     stripeProductID,
     title,
     categories,
+    aptify_id,
     meta: { image: metaImage, description } = {},
-  } = product
+  } = product;
 
   return (
     <Fragment>
@@ -44,24 +45,29 @@ export const ProductHero: React.FC<{
       )}
       <Gutter className={classes.productHero}>
         <div className={classes.content}>
+          {!aptify_id ? null : (
+            <div className={classes.categories}>
+              <strong>Aptify ID</strong> {aptify_id}
+            </div>
+          )}
           <div className={classes.categories}>
             {categories?.map((category, index) => {
               if (typeof category === 'object' && category !== null) {
-                const { title: categoryTitle } = category
+                const { title: categoryTitle } = category;
 
-                const titleToUse = categoryTitle || 'Untitled category'
+                const titleToUse = categoryTitle || 'Untitled category';
 
-                const isLast = index === categories.length - 1
+                const isLast = index === categories.length - 1;
 
                 return (
                   <Fragment key={index}>
                     {titleToUse}
                     {!isLast && <Fragment>, &nbsp;</Fragment>}
                   </Fragment>
-                )
+                );
               }
 
-              return null
+              return null;
             })}
           </div>
           <h1 className={classes.title}>{title}</h1>
@@ -90,5 +96,5 @@ export const ProductHero: React.FC<{
         </div>
       </Gutter>
     </Fragment>
-  )
-}
+  );
+};

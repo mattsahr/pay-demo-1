@@ -1,7 +1,27 @@
-import { ARCHIVE_BLOCK, CALL_TO_ACTION, CONTENT, MEDIA_BLOCK } from './blocks'
-import { LINK_FIELDS } from './link'
-import { MEDIA } from './media'
-import { META } from './meta'
+import { ARCHIVE_BLOCK, CALL_TO_ACTION, CONTENT, MEDIA_BLOCK } from './blocks';
+import { LINK_FIELDS } from './link';
+import { MEDIA } from './media';
+import { META } from './meta';
+
+/*
+const EVENTPOD = `
+        eventPod {
+          eventIntegration
+          nativeEvent {
+            nativePodType
+            nativeEventID
+          }
+          configioEvent {
+            configioPodType
+            configioEventID
+          }
+          expologicEvent {
+            expologicPodType
+            expologicEventID
+          }
+        }
+`;
+*/
 
 export const PAGES = `
   query Pages {
@@ -11,7 +31,7 @@ export const PAGES = `
       }
     }
   }
-`
+`;
 
 export const PAGE = `
   query Page($slug: String, $draft: Boolean) {
@@ -34,8 +54,30 @@ export const PAGE = `
           ${MEDIA_BLOCK}
           ${ARCHIVE_BLOCK}
         }
+        eventPod {
+          eventIntegration
+          nativeEvent {
+            nativePodType
+            nativeEventID
+          }
+          configioEvent {
+            configioPodType
+            configioEventID
+          }
+          expologicEvent {
+            expologicPodType
+            expologicEventID
+          }
+        }
+        anotherLayout {
+          ${CONTENT}
+          ${CALL_TO_ACTION}
+          ${CONTENT}
+          ${MEDIA_BLOCK}
+          ${ARCHIVE_BLOCK}
+        }
         ${META}
       }
     }
   }
-`
+`;

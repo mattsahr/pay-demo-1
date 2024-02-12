@@ -1,17 +1,61 @@
-import type { CollectionConfig } from 'payload/types'
+import type { CollectionConfig, CollectionBeforeReadHook } from 'payload/types';
 
-import { admins } from '../../access/admins'
-import { Archive } from '../../blocks/ArchiveBlock'
-import { CallToAction } from '../../blocks/CallToAction'
-import { Content } from '../../blocks/Content'
-import { MediaBlock } from '../../blocks/MediaBlock'
-import { slugField } from '../../fields/slug'
-import { populateArchiveBlock } from '../../hooks/populateArchiveBlock'
-import { checkUserPurchases } from './access/checkUserPurchases'
-import { beforeProductChange } from './hooks/beforeChange'
-import { deleteProductFromCarts } from './hooks/deleteProductFromCarts'
-import { revalidateProduct } from './hooks/revalidateProduct'
-import { ProductSelect } from './ui/ProductSelect'
+import { admins } from '../../access/admins';
+import { Archive } from '../../blocks/ArchiveBlock';
+import { CallToAction } from '../../blocks/CallToAction';
+import { Content } from '../../blocks/Content';
+import { MediaBlock } from '../../blocks/MediaBlock';
+import { slugField } from '../../fields/slug';
+import { populateArchiveBlock } from '../../hooks/populateArchiveBlock';
+import { checkUserPurchases } from './access/checkUserPurchases';
+import { beforeProductChange } from './hooks/beforeChange';
+import { deleteProductFromCarts } from './hooks/deleteProductFromCarts';
+import { revalidateProduct } from './hooks/revalidateProduct';
+import { CustomList } from '../../blocks/List/CustomList';
+import { CustomEdit } from '../../blocks/Edit/CustomEdit';
+import { BeforeListUX }from '../../blocks/List/BeforeList';
+import { ProductSelect } from './ui/ProductSelect';
+
+const beforeReadHook: CollectionBeforeReadHook = async ({
+  doc, // full document data
+  req, // full express request
+  query, // JSON formatted query
+}) => {
+  console.log(' ');
+  console.log('QUERY');
+  console.log(query);
+  console.log('DOC');
+  console.log((doc?.title || 'NO TITLE') + '  id: ' + (doc?.id || 'X') );
+  // console.log('ENV');
+  // console.log(process.env);
+  console.log(' ');
+
+  return doc;
+};
+
+/*
+{
+  slug: 'my-collection',
+  access: {
+    read: 'admin', // Set the access control property for this collection
+  },
+  admin: {
+    components: {
+      BeforeList: [
+        {
+          component: 'MyActionComponent',
+          props: {
+            // Add any props you need for your action component
+          },
+          access: {
+            read: 'admin', // Set the access control property for the action component
+          },
+        },
+      ],
+    },
+  },
+}
+*/
 
 const Products: CollectionConfig = {
   slug: 'products',
@@ -21,12 +65,20 @@ const Products: CollectionConfig = {
     preview: doc => {
       return `${process.env.PAYLOAD_PUBLIC_SERVER_URL}/api/preview?url=${encodeURIComponent(
         `${process.env.PAYLOAD_PUBLIC_SERVER_URL}/products/${doc.slug}`,
-      )}&secret=${process.env.PAYLOAD_PUBLIC_DRAFT_SECRET}`
+      )}&secret=${process.env.PAYLOAD_PUBLIC_DRAFT_SECRET}`;
+    },
+    components: {
+      BeforeList: [ BeforeListUX ],
+      views: {
+        List: CustomList,
+        // Edit: CustomEdit,
+      },
     },
   },
   hooks: {
     beforeChange: [beforeProductChange],
     afterChange: [revalidateProduct],
+    beforeRead: [beforeReadHook],
     afterRead: [populateArchiveBlock],
     afterDelete: [deleteProductFromCarts],
   },
@@ -39,11 +91,16 @@ const Products: CollectionConfig = {
     update: admins,
     delete: admins,
   },
+  // customHeader: 'Woot', // CustomHeader,
   fields: [
     {
       name: 'title',
       type: 'text',
       required: true,
+    },
+    {
+      name: 'aptify_id',
+      type: 'text',
     },
     {
       name: 'publishedOn',
@@ -58,9 +115,9 @@ const Products: CollectionConfig = {
         beforeChange: [
           ({ siblingData, value }) => {
             if (siblingData._status === 'published' && !value) {
-              return new Date()
+              return new Date();
             }
-            return value
+            return value;
           },
         ],
       },
@@ -139,7 +196,7 @@ const Products: CollectionConfig = {
           id: {
             not_in: [id],
           },
-        }
+        };
       },
     },
     slugField(),
@@ -154,6 +211,6 @@ const Products: CollectionConfig = {
       },
     },
   ],
-}
+};
 
-export default Products
+export default Products;
